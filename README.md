@@ -122,6 +122,6 @@ Cite the Code: [![DOI](https://zenodo.org/badge/872829989.svg)](https://doi.org/
 Acknowledgement to Syed Hussain Abbas, Nianfang Shi, Michelle Weber and Normand Overney
 
 ### License
-This work is licensed under a Creative Commons Attribution 4.0 International license (CC-BY) (as defined in the [LICENSE](LICENSE.md)).
-By downloading and using the code and model you agree to the terms in the [LICENSE](LICENSE.md).
+Copyright (c) 2024 ETH Zurich, Cyprien Fol.n. All rights reserved.
+[Licensed](LICENSE.md) under the MIT license.
 
