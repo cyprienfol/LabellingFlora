@@ -1,0 +1,86 @@
+#pragma instancing_options assumeuniformscaling procedural:ConfigureProcedural
+#define THREADNUMBER = 512; 
+#pragma kernel FromWorldToUnityPositionsGpu
+#pragma kernel LabellingOnGpu
+
+RWStructuredBuffer<float3> _Positions;
+RWStructuredBuffer<float3> _Colors;
+RWStructuredBuffer<uint> _Categories;
+float _PointSize;
+uint _NumPoints;
+uint _GroupResolution;
+float _Scale;
+float _Theta;
+float4 _Axis;
+float3 _OriginalBarycenter;
+float3 _UnityBarycenter;
+uint _Label;
+float3 _CursorPosition;
+float _CursorRadius;
+float3 _CursorColor;
+
+
+void SetPosition (uint3 id, float3 position)
+{
+	if (id.x < _NumPoints) {
+		_Positions[id.x] = position;
+	}
+}
+
+void SetLabel(uint id)
+{
+	if (sqrt(dot(id, _CursorPosition)) < _CursorRadius )
+	{
+		_Categories[id] = _Label; 
+	}
+}
+
+float GetDistance(float3 pointA, float3 pointB)
+{
+	return sqrt((pointA.x - pointB.x)*(pointA.x - pointB.x) + (pointA.y - pointB.y)*(pointA.y - pointB.y) + (pointA.z - pointB.z)*(pointA.z - pointB.z)); 
+	
+}
+
+
+[numthreads(512, 1, 1)]
+void FromWorldToUnityPositionsGpu(uint3 id: SV_GroupThreadID, uint3 gid: SV_GroupID)
+{
+	//int groupThreadIndex = id.x + id.y * 8 + id.z * 8 * 8;
+	int groupIndex = gid.x + gid.y * _GroupResolution;
+	int pointIndex = groupIndex * (8 * 8 * 8) + id.x;
+
+	float tempPosition;
+
+	if (pointIndex < _NumPoints)
+	{
+		// Center data at barycenter
+		_Positions[pointIndex] = _Positions[pointIndex] - _OriginalBarycenter;
+
+		// The Y axis in unity corresponds to the Z axis in real world
+		tempPosition = _Positions[pointIndex].y;
+		_Positions[pointIndex].y = _Positions[pointIndex].z;
+		_Positions[pointIndex].z = tempPosition;
+
+		// Shift Position at unity origin
+		_Positions[pointIndex] = _Positions[pointIndex] + _UnityBarycenter;
+	}
+}
+
+[numthreads(512,1,1)] 
+void LabellingOnGpu(uint3 id: SV_GroupThreadID, uint3 gid : SV_GroupID)
+{
+	int groupIndex = gid.x + gid.y * _GroupResolution;
+	int pointIndex = groupIndex * (8 * 8 * 8) + id.x;
+
+	if (pointIndex < _NumPoints)
+	{
+		if (GetDistance(_Positions[pointIndex], _CursorPosition) < _CursorRadius)
+		{
+			_Colors[pointIndex] = _CursorColor;
+			_Categories[pointIndex] = _Label;
+		}
+	}
+
+}
+
+
