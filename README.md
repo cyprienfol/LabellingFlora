@@ -111,6 +111,7 @@ Now you're all set to begin your labelling work.
 Enjoy your experience annotating with the VR app!
 
 ## Citation
+Cite the Code: [![DOI](https://zenodo.org/badge/872829989.svg)](https://doi.org/10.5281/zenodo.13933004)
 
 ## Related Work
 - [1] C.R. Fol, A. Murtiyoso, V. Griess, "[Feasibility study of using virtual reality for interactive and immersive semantic segmentation of single tree stems](https://doi.org/10.5194/isprs-archives-XLVIII-2-W1-2022-95-2022)"
